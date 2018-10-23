@@ -1,0 +1,28 @@
+import serial  # add Serial library for Serial communication
+import time
+
+Arduino_Serial = serial.Serial('/dev/cu.usbmodem1421', 9600)  # Create Serial port object called arduinoSerialData
+
+Arduino_Serial.readline()  # read the serial data and print it as line
+print("Enter 1 to ON LED and 0 to OFF LED")
+
+
+
+from numpy.random import randint
+
+
+
+while 1:  # infinite loop
+
+    
+    Arduino_Serial.write(b'7')             # clears buffer on arduino      
+    values = randint(0, 2, 4)              #  Random array four number 0 to 1
+    mystring = ''.join(str(e) for e in values).   # joins array into string (could add 7 to end here?)
+
+    Arduino_Serial.write(mystring.encode())  # send 1 to arduino
+    print("LED is RandOm!!!")
+    time.sleep(1)                          # 1 secound delay
+
+
+
+   
