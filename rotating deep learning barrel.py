@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 # load the image and compute the ratio of the old height
 # to the new height, clone it, and resize it
-image = cv2.imread("Gavin.jpg")
+image = cv2.imread("sign.jpg")
 ratio = image.shape[0] / 500.0
 orig = image.copy()
 image = imutils.resize(image, height=500)
@@ -143,4 +143,22 @@ print("STEP 3: Apply perspective transform")
 cv2.imshow("Original", imutils.resize(orig, height=650))
 cv2.imshow("Scanned", imutils.resize(warped, height=650))
 cv2.waitKey(0)
+
+shp = (warped.shape)
+print(shp)
+print(shp[0])
+x = divmod(shp[0], 3)
+b = (x[0])
+
+
+crop_img = warped[:, :b]
+crop_img2 = warped[:, b:(2*b)]
+crop_img3 = warped[:,(2*b):(3*b)]
+cv2.imshow("Scanned", imutils.resize(crop_img, height=650))
+cv2.imshow("Scanned2", imutils.resize(crop_img2, height=650))
+cv2.imshow("Scanned3", imutils.resize(crop_img3, height=650))
+cv2.waitKey(0)
+#need to divide image into sections that divide by 3 leaving a remainder which can be left as uncropped pixesl
+#the height will stay the same but the lenght needs to be 3 equal parts plus remainder use divmod to get
+#how many times pixels plus the remainder. ':' by itself means full coloum or row.
 
