@@ -1,5 +1,9 @@
 #include <Encoder.h>
+int value=0;
+const byte sprayheads = 4;             // number of sprayheads
+byte Spray[3];                        //an array to store spray solenoid postions
 
+boolean newData = false;
 int RPWM=5;
 int LPWM=6;
 // timer 0
@@ -45,17 +49,83 @@ void loop() {
   if (newmyencoder >= 878) {
   
   analogWrite(RPWM,0);
-  Serial.println(newmyencoder);
+  //Serial.println(newmyencoder);
   }
   
-   if (Serial.available()) {
-    Serial.read();
-    Serial.println("Reset both knobs to zero");
-    myencoder.write(0);}
-    
+   
 
+
+  
+  
+  if (Serial.available()) {
+    Serial.read();
+  recvWithEndMarker();
+  showNewData();
+  myencoder.write(0);
+  }
+
+  
+
+
+
+  
+  
 }
 
 //void count(){
   //encoder0Pos = encoder0Pos + 1;
 //}
+
+void recvWithEndMarker() {
+    static byte ndx = 0;
+    char endMarker = '7';
+    char rc;
+    
+    while (Serial.available() > 0 && newData == false) {
+        rc = Serial.read();
+
+        if (rc != endMarker) {
+            Spray[ndx] = rc;
+            ndx++;
+            if (ndx >= sprayheads) {
+                ndx = sprayheads - 1;
+            }
+        }
+        else {
+            Spray[ndx] = '\0'; // terminate the string
+            ndx = 0;
+            newData = true;
+        }
+
+        
+    }
+
+    }
+    
+
+void showNewData() {
+
+  int head = 0;         
+  int heads = 4;
+  int pinshift = 10;     //makes sure the correct pins are used, we are starting from 8
+  int a = 0;
+
+  while ( head < heads ){
+
+    a = head + pinshift;
+  
+        //if (Spray[head] == '1')
+        //digitalWrite (a, LOW);
+        Serial.println(Spray[head]);
+     
+        //else if (Spray[head] == '0')
+        //digitalWrite (a, HIGH);
+        
+        head++;
+        
+        
+       }
+
+        newData = false;
+        
+    }
