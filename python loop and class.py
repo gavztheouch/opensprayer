@@ -1,6 +1,6 @@
 import time
 from fastai.vision import *
-from PIL import Image
+from PIL import Image, ImageChops
 
 
 doc = Image.open('learn/test/doc.jpg')
@@ -25,7 +25,7 @@ for e in range(0,1536,256):
         print(out)
         if out == tensor(0):
             print("Dock")
-            square.convert('LA')
+            square = ImageChops.invert(square)
             new_im.paste(square, (x, e))
         else:
             print("Not Dock")
@@ -33,3 +33,4 @@ for e in range(0,1536,256):
         square.close()
 
 new_im.save("learn/output.jpg")
+      
