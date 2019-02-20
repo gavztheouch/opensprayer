@@ -1,35 +1,64 @@
+#include <Encoder.h>
 int value=0;
-const byte sprayheads = 38;             // number of sprayheads
-byte Spray[38];                        //an array to store spray solenoid postions
+const byte sprayheads = 48;             // number of sprayheads
+byte Spray[48];                        //an array to store spray solenoid postions
 int dist = 0;
 boolean newData = false;
+boolean showNewDataB = false;
 int rowshift = 0;
-
+Encoder myencoder(2, 3);
+long newmyencoder;
+int temprowshift;
 
 void setup() 
    { 
       Serial.begin(9600); 
-      pinMode(2, OUTPUT);
-      pinMode(3, OUTPUT);
+      
       pinMode(4, OUTPUT);
       pinMode(5, OUTPUT);
       pinMode(6, OUTPUT);
-      digitalWrite (2, HIGH);
-      digitalWrite (3, HIGH);
+      pinMode(7, OUTPUT);
+      pinMode(8, OUTPUT);
+      pinMode(9, OUTPUT);
+      pinMode(10, OUTPUT);
+      pinMode(11, OUTPUT);
+      pinMode(12, OUTPUT);
+      pinMode(13, OUTPUT);
       digitalWrite (4, HIGH);
       digitalWrite (5, HIGH);
       digitalWrite (6, HIGH);
+      digitalWrite (7, HIGH);
+      digitalWrite (8, HIGH);
+      digitalWrite (9, HIGH);
+      digitalWrite (10, HIGH);
+      digitalWrite (11, LOW);
+      digitalWrite (12, HIGH);
+      digitalWrite (13, HIGH);
       
    }
  
 void loop() 
    {
-     
+      
+      newmyencoder = myencoder.read();
+      temprowshift = map(newmyencoder, 0, 3000, 0, 6); //map value of encoder or pot to 0-5
+      rowshift = temprowshift * 8;                     //multiply map value by 8 to get rowshift value
+      //Serial.print(rowshift);
+      if(newmyencoder >= 3000){
+        myencoder.write(0);
+        digitalWrite(11, LOW);
+        
+      }
       recvWithEndMarker();
-      showNewData();
-      rowshift = rowshift + 8;
-      if (rowshift >= 30) {
-        rowshift = 0;}
+      if (showNewDataB == true){
+        showNewData();
+      }
+      if (rowshift >= 47) {
+        rowshift = 0;
+        digitalWrite(11, LOW);
+        showNewDataB = false;
+        resetspray();
+        }
      
       delay(1000);
 
@@ -54,6 +83,8 @@ void recvWithEndMarker() {
             Spray[ndx] = '\0'; // terminate the string
             ndx = 0;
             newData = true;
+            showNewDataB = true;
+            analogWrite(11,100);
         }
     }
 }
@@ -62,42 +93,14 @@ void recvWithEndMarker() {
 void showNewData() {
 
   int head = 0;         
-  int heads = 5;
-  int pinshift = 2;     //makes sure the correct pins are used, we are starting from 8
-  int a = 0;
-  int bito;
-
-  while ( head < heads ){
-
-    a = head + pinshift;
-    bito = head + rowshift;
-  
-        if (Spray[bito] == '1')
-        digitalWrite (a, LOW);
-       
-     
-        else if (Spray[bito] == '0')
-        digitalWrite (a, HIGH);
-        
-        head++;
-        
-        
-       }
-
-        newData = false;
-        
-    }
-void showNewData2() {
-
-  int head = 0;         
   int heads = 6;
-  int pinshift = 2;     //makes sure the correct pins are used, we are starting from 8
-  int rowshift = 9;     //makes sure the array is indexing the correct row
+  int pinshift = 4;     //makes sure the correct pins are used, we are starting from 8
   int a = 0;
   int bito;
 
   while ( head < heads ){
 
+    
     a = head + pinshift;
     bito = head + rowshift;
   
@@ -112,11 +115,20 @@ void showNewData2() {
         
         
        }
-
-        newData = true;
+        if (rowshift>= 48);{
+        newData = false;}
         
     }
+void resetspray() {
 
-     
-    
-    
+    digitalWrite (4, HIGH);
+    digitalWrite (5, HIGH);
+    digitalWrite (6, HIGH);
+    digitalWrite (7, HIGH);
+    digitalWrite (8, HIGH);
+    digitalWrite (9, HIGH);
+    digitalWrite (10, HIGH);
+
+}
+
+   
